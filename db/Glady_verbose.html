@@ -1,0 +1,60 @@
+<html>
+<head>
+<meta charset='utf-8'>
+<style>
+  #mld .relation { font-variant: small-caps; font-weight: bold }
+  #mld .primary { text-decoration: underline }
+  #mld .foreign { font-style: oblique }
+  #mld .normal { }
+  #mld strong { font-weight: bold }
+  #mld i { font-style: italic }
+  #mld ul { list-style-type:square; margin: 0 0 1em 2em }
+</style>
+</head>
+<body>
+<div id='mld'>
+<div>
+  <span class='relation'>COMPANY</span> (
+    <span class='primary'>co_id</span>,
+    <span class='normal'>name</span>,
+    <span class='normal'>balance</span>
+  )
+  <ul>
+    <li>Le champ <i>co_id</i> constitue la clef primaire de la table. C'était déjà un identifiant de l'entité <i>COMPANY</i>.</li>
+    <li>Les champs <i>name</i> et <i>balance</i> étaient déjà de simples attributs de l'entité <i>COMPANY</i>.</li>
+  </ul>
+</div>
+
+<div>
+  <span class='relation'>EMPLOYEE</span> (
+    <span class='primary'>em_id</span>,
+    <span class='normal'>firstname</span>,
+    <span class='normal'>lastname</span>,
+    <span class='foreign'>co_id</span>
+  )
+  <ul>
+    <li>Le champ <i>em_id</i> constitue la clef primaire de la table. C'était déjà un identifiant de l'entité <i>EMPLOYEE</i>.</li>
+    <li>Les champs <i>firstname</i> et <i>lastname</i> étaient déjà de simples attributs de l'entité <i>EMPLOYEE</i>.</li>
+    <li>Le champ <i>co_id</i> est une clef étrangère. Il a migré à partir de l'entité <i>COMPANY</i> par l'association de dépendance fonctionnelle <i>WORK</i> en perdant son caractère identifiant.</li>
+  </ul>
+</div>
+
+<div>
+  <span class='relation'>DEPOSIT</span> (
+    <span class='primary'>de_id</span>,
+    <span class='normal'>amount</span>,
+    <span class='normal'>date</span>,
+    <span class='normal'>expire</span>,
+    <span class='normal'>type</span>,
+    <span class='foreign'>em_id</span>
+  )
+  <ul>
+    <li>Le champ <i>de_id</i> constitue la clef primaire de la table. C'était déjà un identifiant de l'entité <i>DEPOSIT</i>.</li>
+    <li>Les champs <i>amount</i>, <i>date</i>, <i>expire</i> et <i>type</i> étaient déjà de simples attributs de l'entité <i>DEPOSIT</i>.</li>
+    <li>Le champ <i>em_id</i> est une clef étrangère. Il a migré à partir de l'entité <i>EMPLOYEE</i> par l'association de dépendance fonctionnelle <i>HAVE</i> en perdant son caractère identifiant.</li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>

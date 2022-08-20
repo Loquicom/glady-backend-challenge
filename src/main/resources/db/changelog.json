@@ -1,4 +1,10 @@
 {
     "databaseChangeLog": [
+        {
+            "include": {
+                "file": "changelog/app-01-create.sql",
+                "relativeToChangelogFile": true
+            }
+        }
     ]
 }

@@ -1,4 +1,16 @@
 {
     "databaseChangeLog": [
+        {
+            "include": {
+                "file": "changelog/app-01-create.sql",
+                "relativeToChangelogFile": true
+            }
+        },
+        {
+            "include": {
+                "file": "test/test-01-insert.sql",
+                "relativeToChangelogFile": true
+            }
+        }
     ]
 }

@@ -1,0 +1,5 @@
+COMPANY: co_id [serial], name [varchar(255)], balance [decimal]
+WORK, 0n COMPANY, 11 EMPLOYEE
+EMPLOYEE: em_id [serial], firstname [varchar(255)], lastname [varchar(255)]
+HAVE, 0n EMPLOYEE, 11 DEPOSIT
+DEPOSIT: de_id [serial], amount [decimal], date [date], expire [date], type [varchar(5)]

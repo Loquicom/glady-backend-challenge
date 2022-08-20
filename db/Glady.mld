@@ -1,0 +1,8 @@
+%%mocodo
+:
+COMPANY: co_id, name, balance
+:
+EMPLOYEE: em_id, firstname, lastname, #co_id->COMPANY->co_id
+:
+DEPOSIT: de_id, amount, date, expire, type, #em_id->EMPLOYEE->em_id
+:
