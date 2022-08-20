@@ -1,0 +1,31 @@
+version: '3.3'
+
+services:
+  glady_db:
+    container_name: "glady-db"
+    image: postgres:14.3-alpine
+    ports:
+      - "${docker.db.externalPort}:5432"
+    environment:
+      POSTGRES_USER: "${docker.db.user}"
+      POSTGRES_PASSWORD: "${docker.db.pass}"
+      POSTGRES_DB: "${docker.db.name}"
+    volumes:
+      - glady_db_volume:/var/lib/postgresql/data
+  glady_server:
+    container_name: "glady-server"
+    image: "${docker.org}/${docker.name}:${docker.tag}"
+    ports:
+      - "${docker.server.port}:80"
+      - "${docker.server.debugPort}:5005"
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      DB_HOST: "glady-db"
+      DB_NAME: "${docker.db.name}"
+      DB_USER: "${docker.db.user}"
+      DB_PASS: "${docker.db.pass}"
+    depends_on:
+      - "glady_db"
+volumes:
+  glady_db_volume:
+    external: true
