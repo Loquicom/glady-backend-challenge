@@ -2,6 +2,7 @@ package com.challenge.gladybackend.data.mapper;
 
 import com.challenge.gladybackend.data.dto.EmployeeDTO;
 import com.challenge.gladybackend.data.entity.Employee;
+import com.challenge.gladybackend.data.view.EmployeeBalanceView;
 
 public class EmployeeMapper {
 
@@ -15,6 +16,11 @@ public class EmployeeMapper {
         entity.setFirstname(dto.getFirstname());
         entity.setLastname(dto.getLastname());
         return entity;
+    }
+
+    public static EmployeeBalanceView makeEmployeeBalanceView(Employee employee, int balance) {
+        return new EmployeeBalanceView(employee.getId(), employee.getFirstname(), employee.getLastname(), balance,
+            employee.getCompany().getId());
     }
 
 }

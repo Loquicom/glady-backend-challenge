@@ -3,6 +3,7 @@ package com.challenge.gladybackend.mapper;
 import com.challenge.gladybackend.data.dto.EmployeeDTO;
 import com.challenge.gladybackend.data.entity.Employee;
 import com.challenge.gladybackend.data.mapper.EmployeeMapper;
+import com.challenge.gladybackend.data.view.EmployeeBalanceView;
 import com.challenge.gladybackend.helper.EmployeeMaker;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +32,16 @@ public class EmployeeMapperTest {
         expected.setCompany(null);
 
         Employee result = EmployeeMapper.toEntity(employeeDTO);
+
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    public void makeEmployeeBalanceViewTest() {
+        Employee employee = EmployeeMaker.makeEmployee();
+        EmployeeBalanceView expected = EmployeeMaker.makeEmployeeBalanceView();
+
+        EmployeeBalanceView result = EmployeeMapper.makeEmployeeBalanceView(employee, EmployeeMaker.EMPLOYEE_BALANCE);
 
         assertThat(result).isEqualTo(expected);
     }

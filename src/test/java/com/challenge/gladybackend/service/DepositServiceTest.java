@@ -4,6 +4,7 @@ import com.challenge.gladybackend.config.TimeConfig;
 import com.challenge.gladybackend.data.entity.Deposit;
 import com.challenge.gladybackend.data.entity.Employee;
 import com.challenge.gladybackend.data.request.CreateDepositRequest;
+import com.challenge.gladybackend.data.view.EmployeeBalanceView;
 import com.challenge.gladybackend.exception.AppInvalidActionException;
 import com.challenge.gladybackend.exception.AppNotFoundException;
 import com.challenge.gladybackend.exception.AppValidatorException;
@@ -136,6 +137,40 @@ public class DepositServiceTest {
 
         assertThat(service.getByEmployeeNotExpired(employee)).isEqualTo(deposits);
         assertThat(service.getByEmployeeNotExpired(EmployeeMaker.EMPLOYEE_ID)).isEqualTo(deposits);
+    }
+
+    @Test
+    public void getEmployeeBalanceSuccessTest() throws AppNotFoundException {
+        //Set correct time for the test
+        TimeConfig.setTime(DepositMaker.DEPOSIT_DATE);
+        // Create objects & test
+        Employee employee = EmployeeMaker.makeEmployee();
+        EmployeeBalanceView expected = EmployeeMaker.makeEmployeeBalanceView();
+        Deposit deposit1 = DepositMaker.makeDeposit();
+        deposit1.setAmount(expected.getBalance() / 2);
+        Deposit deposit2 = DepositMaker.makeDeposit();
+        deposit2.setId(2);
+        deposit2.setAmount(expected.getBalance() / 2);
+        List<Deposit> deposits = Arrays.asList(deposit1, deposit2);
+
+        Mockito.when(employeeService.get(EmployeeMaker.EMPLOYEE_ID)).thenReturn(employee);
+        Mockito.when(depositRepository.findByExpireAfterAndEmployee_Id(TimeConfig.getTime(), EmployeeMaker.EMPLOYEE_ID))
+            .thenReturn(deposits);
+
+        EmployeeBalanceView result = service.getEmployeeBalance(employee);
+        assertThat(result).isEqualTo(expected);
+        result = service.getEmployeeBalance(EmployeeMaker.EMPLOYEE_ID);
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    public void getEmployeeBalanceFailTest() throws AppNotFoundException {
+        Mockito.when(employeeService.get(EmployeeMaker.EMPLOYEE_ID))
+            .thenThrow(new AppNotFoundException(EmployeeMaker.EMPLOYEE_NOT_FOUND, HttpStatus.BAD_REQUEST));
+
+        AppNotFoundException ex = assertThrows(AppNotFoundException.class, () -> service.getEmployeeBalance(EmployeeMaker.EMPLOYEE_ID));
+        assertThat(ex.getMessage()).isEqualTo(EmployeeMaker.EMPLOYEE_NOT_FOUND);
+        assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
 }

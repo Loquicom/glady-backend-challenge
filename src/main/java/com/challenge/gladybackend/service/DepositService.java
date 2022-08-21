@@ -4,10 +4,12 @@ import com.challenge.gladybackend.config.TimeConfig;
 import com.challenge.gladybackend.data.entity.Deposit;
 import com.challenge.gladybackend.data.entity.Employee;
 import com.challenge.gladybackend.data.mapper.DepositMapper;
+import com.challenge.gladybackend.data.mapper.EmployeeMapper;
 import com.challenge.gladybackend.data.mapper.strategy.DepositGiftStrategy;
 import com.challenge.gladybackend.data.mapper.strategy.DepositMealStrategy;
 import com.challenge.gladybackend.data.mapper.strategy.DepositTypeStrategy;
 import com.challenge.gladybackend.data.request.CreateDepositRequest;
+import com.challenge.gladybackend.data.view.EmployeeBalanceView;
 import com.challenge.gladybackend.exception.AppInvalidActionException;
 import com.challenge.gladybackend.exception.AppNotFoundException;
 import com.challenge.gladybackend.exception.AppValidatorException;
@@ -121,6 +123,35 @@ public class DepositService {
     public List<Deposit> getByEmployeeNotExpired(int employeeId) {
         // List all deposit for one employee
         return repository.findByExpireAfterAndEmployee_Id(TimeConfig.getTime(), employeeId);
+    }
+
+    /**
+     * Get the balance (sum of all deposit not expired) for an employee
+     *
+     * @param employeeId The employee ID
+     * @return The view with employee and balance information
+     * @throws AppNotFoundException Employee not found
+     */
+    public EmployeeBalanceView getEmployeeBalance(int employeeId) throws AppNotFoundException {
+        // Get the employee and calculate balance
+        Employee employee = employeeService.get(employeeId);
+        return getEmployeeBalance(employee);
+    }
+
+    /**
+     * Get the balance (sum of all deposit not expired) for an employee
+     *
+     * @param employee The employee
+     * @return The view with employee and balance information
+     */
+    public EmployeeBalanceView getEmployeeBalance(Employee employee) {
+        // List all deposits not expired
+        List<Deposit> deposits = getByEmployeeNotExpired(employee);
+        // Sum and make the view
+        int sum = deposits.stream().mapToInt(Deposit::getAmount).sum();
+        log.info("Employee ({}) {} {} have {} deposits not expired for a total of {}", employee.getId(), employee.getFirstname(),
+            employee.getLastname(), deposits.size(), sum);
+        return EmployeeMapper.makeEmployeeBalanceView(employee, sum);
     }
 
 }
