@@ -3,6 +3,7 @@ package com.challenge.gladybackend.service;
 import com.challenge.gladybackend.data.entity.Company;
 import com.challenge.gladybackend.data.request.CreateCompanyRequest;
 import com.challenge.gladybackend.data.request.CreditCompanyRequest;
+import com.challenge.gladybackend.exception.AppInvalidActionException;
 import com.challenge.gladybackend.exception.AppNotFoundException;
 import com.challenge.gladybackend.helper.CompanyMaker;
 import com.challenge.gladybackend.repository.CompanyRepository;
@@ -87,6 +88,42 @@ public class CompanyServiceTest {
 
         AppNotFoundException ex = assertThrows(AppNotFoundException.class, () -> service.credit(CompanyMaker.COMPANY_ID, request));
         assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void debitSuccessTest() throws AppNotFoundException, AppInvalidActionException {
+        int amount = 24;
+        Company company = CompanyMaker.makeCompany();
+        Company expected = CompanyMaker.makeCompany();
+        expected.setBalance(expected.getBalance() - amount);
+
+        Mockito.when(companyRepository.findById(CompanyMaker.COMPANY_ID)).thenReturn(Optional.of(company));
+        Mockito.when(companyRepository.save(expected)).thenReturn(expected);
+
+        Company result = service.debit(CompanyMaker.COMPANY_ID, amount);
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    public void debitCompanyNotFoundTest() {
+        int amount = 24;
+
+        Mockito.when(companyRepository.findById(CompanyMaker.COMPANY_ID)).thenReturn(Optional.empty());
+
+        AppNotFoundException ex = assertThrows(AppNotFoundException.class, () -> service.debit(CompanyMaker.COMPANY_ID, amount));
+        assertThat(ex.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void debitImpossibleTest() {
+        int amount = 24;
+        Company company = CompanyMaker.makeCompany();
+        company.setBalance(10);
+
+        Mockito.when(companyRepository.findById(CompanyMaker.COMPANY_ID)).thenReturn(Optional.of(company));
+
+        AppInvalidActionException ex = assertThrows(AppInvalidActionException.class, () -> service.debit(CompanyMaker.COMPANY_ID, amount));
+        assertThat(ex.getStatus()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
 }

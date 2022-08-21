@@ -8,10 +8,12 @@ import java.util.List;
 
 public interface DepositRepository extends CrudRepository<Deposit, Integer> {
 
-    public List<Deposit> findByType(String type);
+    public List<Deposit> findByEmployee_Id(int employee_id);
 
-    public List<Deposit> findByExpireAfter(Date date);
+    public List<Deposit> findByTypeAndEmployee_Id(String type, int employee_id);
 
-    public List<Deposit> findByTypeAndExpireAfter(String type, Date date);
+    public List<Deposit> findByExpireAfterAndEmployee_Id(Date expire, int employee_id);
+
+    public List<Deposit> findByTypeAndExpireAfterAndEmployee_Id(String type, Date expire, int employee_id);
 
 }

@@ -3,6 +3,7 @@ package com.challenge.gladybackend.service;
 import com.challenge.gladybackend.data.entity.Company;
 import com.challenge.gladybackend.data.request.CreateCompanyRequest;
 import com.challenge.gladybackend.data.request.CreditCompanyRequest;
+import com.challenge.gladybackend.exception.AppInvalidActionException;
 import com.challenge.gladybackend.exception.AppNotFoundException;
 import com.challenge.gladybackend.repository.CompanyRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -69,6 +70,41 @@ public class CompanyService {
         // Add amount in balance
         int balance = company.getBalance() + request.getAmount();
         log.info("New balance set to {} (+{}) for the company ({}) {}", balance, request.getAmount(), company.getId(), company.getName());
+        company.setBalance(balance);
+        // Save and return
+        return repository.save(company);
+    }
+
+    /**
+     * Debit one amount in the balance of one company if it's possible
+     *
+     * @param id     Company ID
+     * @param amount Amount to remove
+     * @return Company with the new balance
+     * @throws AppNotFoundException      Company is not found
+     * @throws AppInvalidActionException Company don't have enough money for the debit
+     */
+    public Company debit(int id, int amount) throws AppNotFoundException, AppInvalidActionException {
+        // Get company and debit
+        Company company = get(id);
+        return debit(company, amount);
+    }
+
+    /**
+     * Debit one amount in the balance of one company if it's possible
+     *
+     * @param company The company
+     * @param amount  Amount to remove
+     * @return Company with the new balance
+     * @throws AppInvalidActionException Company don't have enough money for the debit
+     */
+    public Company debit(Company company, int amount) throws AppInvalidActionException {
+        // Check if debit is possible
+        int balance = company.getBalance() - amount;
+        if (balance < 0) {
+            throw new AppInvalidActionException("Not enough money");
+        }
+        log.info("New balance set to {} (-{}) for the company ({}) {}", balance, amount, company.getId(), company.getName());
         company.setBalance(balance);
         // Save and return
         return repository.save(company);
