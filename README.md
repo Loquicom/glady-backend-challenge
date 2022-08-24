@@ -46,3 +46,32 @@ Jessica receives a Meal distribution from Apple with the amount of $50 on 01/01/
 
 * Implement one or two functions allowing companies to distribute gift and meal deposits to a user if the company balance allows it.
 * Implement a function to calculate the user's balance.
+
+### How to run and test
+
+The test called `appTest` in the `GladyBackendApplicationTest` class executes all the instructions requested in the statement (create a
+company and an employee, deposit money if the company has the funds and display the employee's balance).
+All actions are displayed in the application logs and asserts verify that the scenario is running correctly.
+
+It is otherwise also possible to launch the application (with or without docker, all the configuration is already done) to test the
+application
+through the REST API it exposes.
+The API documentation is available in the [API.md](./API.md) file, and in a Postman configuration file
+called `Glady.postman_collection.json`
+The Postman collection is intended to work with the configuration defined in the docker-compose
+
+A file named `run.sh` is available to manage the build and execution of the application, here are the main commands:
+
+* `run.sh build_start`: Build application (with maven) and docker image, then start the docker (if the application is running stop the
+  containers first)
+* `run.sh build`: Build application (with maven) and docker image
+* `run.sh start`: Start containers
+* `run.sh stop`: Stop containers
+* `run.sh test`: Execute all tests
+* `run.sh purge`: Remove all containers and volumes
+* `runs.sh reset`: Equivalent to purge, then build_start
+
+### Known issue
+
+Sometimes during the first startup the database container does not have time to finish its initialization before the server container
+starts, which causes a connection error to the database. In this case you just have to restart the containers (stop then start) 

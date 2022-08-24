@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Slf4j
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application-test.properties")
-class GladyBackendApplicationTests {
+class GladyBackendApplicationTest {
 
     @Autowired
     private CompanyService companyService;
