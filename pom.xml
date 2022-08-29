@@ -26,6 +26,8 @@
     <docker.db.name>glady</docker.db.name>
     <docker.db.user>admin</docker.db.user>
     <docker.db.pass>admin</docker.db.pass>
+    <sonar.host>http://localhost:9000</sonar.host>
+    <sonar.key>f62cdf1dc17373692e47ce8346c5f5ef7d4633af</sonar.key>
   </properties>
   <dependencies>
     <!-- Spring -->
@@ -81,6 +83,12 @@
       <version>4.5.1</version>
       <scope>test</scope>
     </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.pitest</groupId>-->
+    <!--      <artifactId>pitest</artifactId>-->
+    <!--      <version>1.9.5</version>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
   </dependencies>
 
   <build>
@@ -207,7 +215,67 @@
           <forkCount>1</forkCount>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.8</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <formats>
+                <format>XML</format>
+              </formats>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>1.9.5</version>
+        <configuration>
+          <outputFormats>
+            <outputFormat>xml</outputFormat>
+          </outputFormats>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>1.0.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>sonar</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <sonar.host.url>${sonar.host}</sonar.host.url>
+        <sonar.projectKey>${project.artifactId}</sonar.projectKey>
+        <sonar.projectVersion>${project.version}</sonar.projectVersion>
+        <sonar.login>${sonar.key}</sonar.login>
+        <sonar.java.binaries>${project.basedir}/target</sonar.java.binaries>
+        <sonar.scm.provider>git</sonar.scm.provider>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>
