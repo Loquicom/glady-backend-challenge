@@ -3,14 +3,12 @@ package com.challenge.gladybackend.entry.controller;
 import com.challenge.gladybackend.data.dto.DepositDTO;
 import com.challenge.gladybackend.data.entity.Deposit;
 import com.challenge.gladybackend.data.request.CreateDepositRequest;
-import com.challenge.gladybackend.data.view.EmployeeBalanceView;
 import com.challenge.gladybackend.data.view.ErrorView;
 import com.challenge.gladybackend.entry.validator.CreateDepositValidator;
 import com.challenge.gladybackend.entry.validator.IdValidator;
 import com.challenge.gladybackend.exception.AppNotFoundException;
 import com.challenge.gladybackend.exception.AppValidatorException;
 import com.challenge.gladybackend.helper.DepositMaker;
-import com.challenge.gladybackend.helper.EmployeeMaker;
 import com.challenge.gladybackend.service.DepositService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -125,27 +123,6 @@ public class DepositControllerTest {
 
         mockMvc.perform(post(rootPath + "/deposits/").contentType(MediaType.APPLICATION_JSON).content(toJson(request)))
             .andExpect(status().isBadRequest()).andExpect(content().json(toJson(errorView)));
-    }
-
-    @Test
-    public void getEmployeeBalanceSuccessTest() throws Exception {
-        EmployeeBalanceView expected = EmployeeMaker.makeEmployeeBalanceView();
-
-        Mockito.when(depositService.getEmployeeBalance(EmployeeMaker.EMPLOYEE_ID)).thenReturn(expected);
-
-        mockMvc.perform(get(rootPath + "/deposits/employees/" + EmployeeMaker.EMPLOYEE_ID + "/balance")).andExpect(status().isOk())
-            .andExpect(content().json(toJson(expected)));
-    }
-
-    @Test
-    public void getEmployeeBalanceFailTest() throws Exception {
-        ErrorView errorView = DepositMaker.makeErrorView();
-
-        Mockito.doThrow(new AppValidatorException(DepositMaker.DEPOSIT_BAD_REQUEST, HttpStatus.BAD_REQUEST)).when(idValidator)
-            .isValidOrThrow(DepositMaker.DEPOSIT_ID);
-
-        mockMvc.perform(get(rootPath + "/deposits/employees/" + EmployeeMaker.EMPLOYEE_ID + "/balance")).andExpect(status().isBadRequest())
-            .andExpect(content().json(toJson(errorView)));
     }
 
 }

@@ -4,7 +4,6 @@ import com.challenge.gladybackend.data.dto.DepositDTO;
 import com.challenge.gladybackend.data.entity.Deposit;
 import com.challenge.gladybackend.data.mapper.DepositMapper;
 import com.challenge.gladybackend.data.request.CreateDepositRequest;
-import com.challenge.gladybackend.data.view.EmployeeBalanceView;
 import com.challenge.gladybackend.entry.validator.CreateDepositValidator;
 import com.challenge.gladybackend.entry.validator.IdValidator;
 import com.challenge.gladybackend.exception.AppInvalidActionException;
@@ -78,17 +77,6 @@ public class DepositController {
         // Create new deposit and return DTO
         Deposit deposit = service.create(request);
         return ResponseUtils.response(DepositMapper.toDTO(deposit));
-    }
-
-    @GetMapping("/employees/{employeeId}/balance")
-    public ResponseEntity<EmployeeBalanceView> getEmployeeBalance(@PathVariable int employeeId)
-        throws AppValidatorException, AppNotFoundException {
-        log.info("Call deposit employee balance: employeeId={}", employeeId);
-        // Check id
-        idValidator.isValidOrThrow(employeeId);
-        // Get Emplayee balance view and return
-        EmployeeBalanceView view = service.getEmployeeBalance(employeeId);
-        return ResponseUtils.response(view);
     }
 
 }

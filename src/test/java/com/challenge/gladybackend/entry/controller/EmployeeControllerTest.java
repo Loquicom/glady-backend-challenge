@@ -3,6 +3,7 @@ package com.challenge.gladybackend.entry.controller;
 import com.challenge.gladybackend.data.dto.EmployeeDTO;
 import com.challenge.gladybackend.data.entity.Employee;
 import com.challenge.gladybackend.data.request.CreateEmployeeRequest;
+import com.challenge.gladybackend.data.view.EmployeeBalanceView;
 import com.challenge.gladybackend.data.view.ErrorView;
 import com.challenge.gladybackend.entry.validator.CreateEmployeeValidator;
 import com.challenge.gladybackend.entry.validator.IdValidator;
@@ -10,6 +11,7 @@ import com.challenge.gladybackend.exception.AppNotFoundException;
 import com.challenge.gladybackend.exception.AppValidatorException;
 import com.challenge.gladybackend.helper.CompanyMaker;
 import com.challenge.gladybackend.helper.EmployeeMaker;
+import com.challenge.gladybackend.service.DepositService;
 import com.challenge.gladybackend.service.EmployeeService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -43,6 +45,9 @@ public class EmployeeControllerTest {
 
     @MockBean
     private EmployeeService employeeService;
+
+    @MockBean
+    private DepositService depositService;
 
     @MockBean
     private CreateEmployeeValidator createEmployeeValidator;
@@ -124,6 +129,27 @@ public class EmployeeControllerTest {
 
         mockMvc.perform(post(rootPath + "/employees/").contentType(MediaType.APPLICATION_JSON).content(toJson(request)))
             .andExpect(status().isBadRequest()).andExpect(content().json(toJson(errorView)));
+    }
+
+    @Test
+    public void getEmployeeBalanceSuccessTest() throws Exception {
+        EmployeeBalanceView expected = EmployeeMaker.makeEmployeeBalanceView();
+
+        Mockito.when(depositService.getEmployeeBalance(EmployeeMaker.EMPLOYEE_ID)).thenReturn(expected);
+
+        mockMvc.perform(get(rootPath + "/employees/" + EmployeeMaker.EMPLOYEE_ID + "/balance")).andExpect(status().isOk())
+            .andExpect(content().json(toJson(expected)));
+    }
+
+    @Test
+    public void getEmployeeBalanceFailTest() throws Exception {
+        ErrorView errorView = EmployeeMaker.makeErrorView();
+
+        Mockito.doThrow(new AppValidatorException(EmployeeMaker.EMPLOYEE_BAD_REQUEST, HttpStatus.BAD_REQUEST)).when(idValidator)
+            .isValidOrThrow(EmployeeMaker.EMPLOYEE_ID);
+
+        mockMvc.perform(get(rootPath + "/employees/" + EmployeeMaker.EMPLOYEE_ID + "/balance")).andExpect(status().isBadRequest())
+            .andExpect(content().json(toJson(errorView)));
     }
 
 }

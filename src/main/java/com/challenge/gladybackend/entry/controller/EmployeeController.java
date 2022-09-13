@@ -4,10 +4,12 @@ import com.challenge.gladybackend.data.dto.EmployeeDTO;
 import com.challenge.gladybackend.data.entity.Employee;
 import com.challenge.gladybackend.data.mapper.EmployeeMapper;
 import com.challenge.gladybackend.data.request.CreateEmployeeRequest;
+import com.challenge.gladybackend.data.view.EmployeeBalanceView;
 import com.challenge.gladybackend.entry.validator.CreateEmployeeValidator;
 import com.challenge.gladybackend.entry.validator.IdValidator;
 import com.challenge.gladybackend.exception.AppNotFoundException;
 import com.challenge.gladybackend.exception.AppValidatorException;
+import com.challenge.gladybackend.service.DepositService;
 import com.challenge.gladybackend.service.EmployeeService;
 import com.challenge.gladybackend.utils.ResponseUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,16 +32,21 @@ public class EmployeeController {
 
     private final EmployeeService service;
 
+    private final DepositService depositService;
+
     private final CreateEmployeeValidator createEmployeeValidator;
 
     private final IdValidator idValidator;
 
     @Autowired
-    public EmployeeController(EmployeeService employeeService, CreateEmployeeValidator createEmployeeValidator, IdValidator idValidator) {
+    public EmployeeController(EmployeeService employeeService, DepositService depositService,
+        CreateEmployeeValidator createEmployeeValidator, IdValidator idValidator) {
         Assert.notNull(employeeService, "EmployeeService must not be null!");
+        Assert.notNull(depositService, "DepositService must not be null!");
         Assert.notNull(createEmployeeValidator, "CreateEmployeeValidator must not be null!");
         Assert.notNull(idValidator, "IdValidator must not be null!");
         this.service = employeeService;
+        this.depositService = depositService;
         this.createEmployeeValidator = createEmployeeValidator;
         this.idValidator = idValidator;
     }
@@ -79,6 +86,24 @@ public class EmployeeController {
         // Create new employee, transform to DTO and return
         Employee employee = service.create(request);
         return ResponseUtils.response(EmployeeMapper.toDTO(employee));
+    }
+
+    /**
+     * Get the employee balance
+     *
+     * @param id Employee ID
+     * @return Employee with his balance
+     * @throws AppValidatorException id is invalid
+     * @throws AppNotFoundException  Employee not found
+     */
+    @GetMapping("/{id}/balance")
+    public ResponseEntity<EmployeeBalanceView> getBalance(@PathVariable int id) throws AppValidatorException, AppNotFoundException {
+        log.info("Call get balance: id={}", id);
+        // Check id
+        idValidator.isValidOrThrow(id);
+        // Get Emplayee balance view and return
+        EmployeeBalanceView view = depositService.getEmployeeBalance(id);
+        return ResponseUtils.response(view);
     }
 
 }
